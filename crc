@@ -1,0 +1,67 @@
+import java.util.zip.CRC32;
+import java.nio.charset.StandardCharsets;
+
+public class CRC {
+    
+    // CRC-32 polynomial 0x04C11DB7 (used for CRC-32)
+    private static final int POLYNOMIAL = 0x04C11DB7;
+    private static final int CRC32_INITIAL_VALUE = 0xFFFFFFFF;
+    private static final int CRC32_XOR_VALUE = 0xFFFFFFFF;
+    
+    // Table for fast CRC calculation
+    private static final int[] CRC32_TABLE = new int[256];
+    
+    // Static block to initialize the CRC32 table
+    static {
+        for (int i = 0; i < 256; i++) {
+            int crc = i << 24;
+            for (int j = 8; j > 0; j--) {
+                if ((crc & 0x80000000) != 0) {
+                    crc = (crc << 1) ^ POLYNOMIAL;
+                } else {
+                    crc <<= 1;
+                }
+            }
+            CRC32_TABLE[i] = crc;
+        }
+    }
+    
+    // Method to calculate CRC32 using the generated table
+    public static int calculateCRC32(byte[] data) {
+        int crc = CRC32_INITIAL_VALUE;
+        
+        for (byte b : data) {
+            int tableIndex = ((crc >> 24) ^ (b & 0xFF)) & 0xFF;
+            crc = (crc << 8) ^ CRC32_TABLE[tableIndex];
+        }
+        
+        return crc ^ CRC32_XOR_VALUE;
+    }
+    
+    // Method to calculate CRC32 checksum of a String
+    public static int calculateCRC32(String input) {
+        byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+        return calculateCRC32(bytes);
+    }
+    
+    // Method to calculate CRC32 using Java's built-in CRC32 class (alternative approach)
+    public static long calculateCRC32WithJavaLibrary(byte[] data) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(data);
+        return crc32.getValue();
+    }
+    
+    // Main method to test the CRC calculation
+    public static void main(String[] args) {
+        // Test data string
+        String testData = "Hello, World!";
+        
+        // Calculate CRC32 manually
+        int crc = calculateCRC32(testData);
+        System.out.printf("Manual CRC32: %08X\n", crc);
+        
+        // Calculate CRC32 using Java's built-in library
+        long javaCRC = calculateCRC32WithJavaLibrary(testData.getBytes(StandardCharsets.UTF_8));
+        System.out.printf("Java CRC32: %08X\n", javaCRC);
+    }
+}
