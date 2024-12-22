@@ -1,0 +1,68 @@
+import java.util.Scanner;
+
+public class DVFS {
+
+    // Simulated frequencies in GHz (e.g., 1.0 GHz, 2.0 GHz, etc.)
+    enum Frequency {
+        LOW(1.0),  // Low frequency
+        MEDIUM(2.0), // Medium frequency
+        HIGH(3.0);  // High frequency
+
+        private double value;
+
+        Frequency(double value) {
+            this.value = value;
+        }
+
+        public double getValue() {
+            return this.value;
+        }
+    }
+
+    // Method to simulate CPU workload execution based on frequency
+    public static void simulateWorkload(Frequency frequency, int taskDuration) {
+        // The duration of the task will be scaled inversely to the frequency
+        double adjustedDuration = taskDuration / frequency.getValue();
+        System.out.println("Simulating task execution at " + frequency.name() + " frequency ("
+                + frequency.getValue() + " GHz). Task will take " + adjustedDuration + " seconds.");
+        try {
+            Thread.sleep((long) (adjustedDuration * 1000)); // Sleep for the adjusted duration
+        } catch (InterruptedException e) {
+            System.err.println("Task interrupted");
+        }
+        System.out.println("Task completed at " + frequency.name() + " frequency.");
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // User input: Task duration
+        System.out.print("Enter the task duration in seconds: ");
+        int taskDuration = scanner.nextInt();
+
+        // User input: Choose frequency level
+        System.out.println("Select the CPU frequency level:");
+        System.out.println("1. Low Frequency (1.0 GHz)");
+        System.out.println("2. Medium Frequency (2.0 GHz)");
+        System.out.println("3. High Frequency (3.0 GHz)");
+
+        int choice = scanner.nextInt();
+
+        // Simulate DVFS
+        switch (choice) {
+            case 1:
+                simulateWorkload(Frequency.LOW, taskDuration);
+                break;
+            case 2:
+                simulateWorkload(Frequency.MEDIUM, taskDuration);
+                break;
+            case 3:
+                simulateWorkload(Frequency.HIGH, taskDuration);
+                break;
+            default:
+                System.out.println("Invalid choice. Exiting.");
+        }
+
+        scanner.close();
+    }
+}
