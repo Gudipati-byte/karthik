@@ -1,0 +1,175 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Class representing a Flight
+class Flight {
+    private String flightNumber;
+    private String departureCity;
+    private String destinationCity;
+    private int availableSeats;
+
+    public Flight(String flightNumber, String departureCity, String destinationCity, int availableSeats) {
+        this.flightNumber = flightNumber;
+        this.departureCity = departureCity;
+        this.destinationCity = destinationCity;
+        this.availableSeats = availableSeats;
+    }
+
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public String getDepartureCity() {
+        return departureCity;
+    }
+
+    public String getDestinationCity() {
+        return destinationCity;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void bookSeat() {
+        if (availableSeats > 0) {
+            availableSeats--;
+        } else {
+            System.out.println("Sorry, no available seats for this flight.");
+        }
+    }
+
+    public void displayFlightDetails() {
+        System.out.println("Flight Number: " + flightNumber);
+        System.out.println("Departure: " + departureCity);
+        System.out.println("Destination: " + destinationCity);
+        System.out.println("Available Seats: " + availableSeats);
+    }
+}
+
+// Class representing a Reservation
+class Reservation {
+    private String passengerName;
+    private Flight flight;
+
+    public Reservation(String passengerName, Flight flight) {
+        this.passengerName = passengerName;
+        this.flight = flight;
+    }
+
+    public String getPassengerName() {
+        return passengerName;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void displayReservationDetails() {
+        System.out.println("Passenger: " + passengerName);
+        flight.displayFlightDetails();
+    }
+}
+
+// Main class for the Airline Reservation System
+public class AirlineReservationSystem {
+    private static List<Flight> flights = new ArrayList<>();
+    private static List<Reservation> reservations = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    // Method to add sample flights
+    public static void initializeFlights() {
+        flights.add(new Flight("AI101", "New York", "London", 10));
+        flights.add(new Flight("AI102", "Los Angeles", "Tokyo", 5));
+        flights.add(new Flight("AI103", "Chicago", "Paris", 8));
+        flights.add(new Flight("AI104", "San Francisco", "Berlin", 15));
+    }
+
+    // Method to display available flights
+    public static void displayFlights() {
+        System.out.println("Available Flights:");
+        for (Flight flight : flights) {
+            flight.displayFlightDetails();
+            System.out.println("-------------------------------");
+        }
+    }
+
+    // Method to make a reservation
+    public static void makeReservation() {
+        System.out.print("Enter passenger name: ");
+        String passengerName = scanner.nextLine();
+
+        System.out.println("Select a flight to book:");
+        for (int i = 0; i < flights.size(); i++) {
+            Flight flight = flights.get(i);
+            System.out.println((i + 1) + ". " + flight.getFlightNumber() + " - " + flight.getDepartureCity() + " to " + flight.getDestinationCity() + " (Seats Available: " + flight.getAvailableSeats() + ")");
+        }
+        System.out.print("Enter flight number to book: ");
+        int flightChoice = scanner.nextInt();
+        scanner.nextLine();  // Consume newline character
+
+        if (flightChoice < 1 || flightChoice > flights.size()) {
+            System.out.println("Invalid flight selection.");
+            return;
+        }
+
+        Flight selectedFlight = flights.get(flightChoice - 1);
+
+        // Check if there are available seats
+        if (selectedFlight.getAvailableSeats() > 0) {
+            selectedFlight.bookSeat();
+            Reservation reservation = new Reservation(passengerName, selectedFlight);
+            reservations.add(reservation);
+            System.out.println("Reservation successful!");
+        } else {
+            System.out.println("Sorry, no seats available for this flight.");
+        }
+    }
+
+    // Method to display all reservations
+    public static void viewReservations() {
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found.");
+        } else {
+            System.out.println("All Reservations:");
+            for (Reservation reservation : reservations) {
+                reservation.displayReservationDetails();
+                System.out.println("-------------------------------");
+            }
+        }
+    }
+
+    // Main menu
+    public static void main(String[] args) {
+        initializeFlights(); // Initialize some sample flights
+        
+        while (true) {
+            System.out.println("Welcome to the Airline Reservation System!");
+            System.out.println("1. View Available Flights");
+            System.out.println("2. Make a Reservation");
+            System.out.println("3. View Reservations");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline character
+
+            switch (choice) {
+                case 1:
+                    displayFlights();
+                    break;
+                case 2:
+                    makeReservation();
+                    break;
+                case 3:
+                    viewReservations();
+                    break;
+                case 4:
+                    System.out.println("Thank you for using the Airline Reservation System. Goodbye!");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
