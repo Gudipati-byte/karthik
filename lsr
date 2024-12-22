@@ -1,0 +1,52 @@
+import java.util.*;
+
+public class LeastSquaresRegression {
+
+    // Method to calculate the coefficients m (slope) and c (intercept)
+    public static void linearRegression(List<Double> x, List<Double> y) {
+        int n = x.size();
+        
+        if (n != y.size()) {
+            System.out.println("The number of x values must be equal to the number of y values.");
+            return;
+        }
+        
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+
+        // Calculating the sums required for the formula
+        for (int i = 0; i < n; i++) {
+            sumX += x.get(i);
+            sumY += y.get(i);
+            sumXY += x.get(i) * y.get(i);
+            sumX2 += x.get(i) * x.get(i);
+        }
+
+        // Calculate slope (m) and intercept (c)
+        double m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        double c = (sumY - m * sumX) / n;
+
+        System.out.println("Linear Regression Equation: y = " + m + "x + " + c);
+        System.out.println("Slope (m) = " + m);
+        System.out.println("Intercept (c) = " + c);
+    }
+
+    // Method to predict y for a given x using the linear regression equation
+    public static double predict(double x, double m, double c) {
+        return m * x + c;
+    }
+
+    public static void main(String[] args) {
+        // Example data points (x, y)
+        List<Double> x = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0); // Independent variable (x)
+        List<Double> y = Arrays.asList(1.5, 2.5, 3.5, 4.5, 5.5); // Dependent variable (y)
+
+        // Perform linear regression to get the equation y = mx + c
+        linearRegression(x, y);
+        
+        // Example prediction: predict y for x = 6
+        double m = 1.0;  // Slope obtained from linear regression
+        double c = 0.5;  // Intercept obtained from linear regression
+        double predictedY = predict(6.0, m, c);
+        System.out.println("Predicted value for x = 6: y = " + predictedY);
+    }
+}
