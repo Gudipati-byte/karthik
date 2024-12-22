@@ -1,0 +1,166 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Class representing a Book
+class Book {
+    private String title;
+    private String author;
+    private boolean isAvailable;
+
+    public Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+        this.isAvailable = true;  // Initially, all books are available
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    public void borrow() {
+        if (isAvailable) {
+            isAvailable = false;
+        } else {
+            System.out.println("The book \"" + title + "\" is already borrowed.");
+        }
+    }
+
+    public void returnBook() {
+        isAvailable = true;
+    }
+
+    public void displayBookInfo() {
+        System.out.println("Title: " + title + ", Author: " + author + ", Available: " + (isAvailable ? "Yes" : "No"));
+    }
+}
+
+// Class representing a Library
+class Library {
+    private List<Book> books;
+    private List<Book> borrowedBooks;
+
+    public Library() {
+        this.books = new ArrayList<>();
+        this.borrowedBooks = new ArrayList<>();
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void displayBooks() {
+        if (books.isEmpty()) {
+            System.out.println("No books available in the library.");
+            return;
+        }
+        System.out.println("Available Books in the Library:");
+        for (Book book : books) {
+            book.displayBookInfo();
+        }
+    }
+
+    public boolean borrowBook(String title) {
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(title) && book.isAvailable()) {
+                book.borrow();
+                borrowedBooks.add(book);
+                System.out.println("You have borrowed: " + book.getTitle());
+                return true;
+            }
+        }
+        System.out.println("Sorry, the book \"" + title + "\" is not available.");
+        return false;
+    }
+
+    public void returnBook(String title) {
+        for (Book book : borrowedBooks) {
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                book.returnBook();
+                borrowedBooks.remove(book);
+                System.out.println("You have returned: " + book.getTitle());
+                return;
+            }
+        }
+        System.out.println("You haven't borrowed \"" + title + "\".");
+    }
+
+    public void viewBorrowedBooks() {
+        if (borrowedBooks.isEmpty()) {
+            System.out.println("No books are currently borrowed.");
+        } else {
+            System.out.println("Borrowed Books:");
+            for (Book book : borrowedBooks) {
+                book.displayBookInfo();
+            }
+        }
+    }
+}
+
+// Main class for Library Management System
+public class LibraryManagementSystem {
+    private static Library library = new Library();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        // Adding some sample books to the library
+        library.addBook(new Book("The Great Gatsby", "F. Scott Fitzgerald"));
+        library.addBook(new Book("To Kill a Mockingbird", "Harper Lee"));
+        library.addBook(new Book("1984", "George Orwell"));
+        library.addBook(new Book("Moby Dick", "Herman Melville"));
+
+        while (true) {
+            System.out.println("\nWelcome to the Library Management System!");
+            System.out.println("1. View Available Books");
+            System.out.println("2. Borrow a Book");
+            System.out.println("3. Return a Book");
+            System.out.println("4. View Borrowed Books");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume the newline character
+
+            switch (choice) {
+                case 1:
+                    library.displayBooks();
+                    break;
+                case 2:
+                    borrowBook();
+                    break;
+                case 3:
+                    returnBook();
+                    break;
+                case 4:
+                    library.viewBorrowedBooks();
+                    break;
+                case 5:
+                    System.out.println("Thank you for using the Library Management System. Goodbye!");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    // Helper method to borrow a book
+    private static void borrowBook() {
+        System.out.print("Enter the title of the book you want to borrow: ");
+        String title = scanner.nextLine();
+        library.borrowBook(title);
+    }
+
+    // Helper method to return a book
+    private static void returnBook() {
+        System.out.print("Enter the title of the book you want to return: ");
+        String title = scanner.nextLine();
+        library.returnBook(title);
+    }
+}
